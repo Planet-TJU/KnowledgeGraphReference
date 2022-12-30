@@ -1,7 +1,7 @@
 from py2neo import Graph
 
 # 加载知识图谱
-graph = Graph("http://localhost:7474", auth=("neo4j", "neo4j123"))
+graph = Graph("bolt://localhost:7687", auth=("neo4j", "neo4j123"))
 
 # 知识语料路径
 entity_corpus_path = 'data/knowledge/'
