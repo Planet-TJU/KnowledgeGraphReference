@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -176,6 +176,7 @@
                     <div class="col-lg-8" style="height: 700px" id="guanxi"></div>
                     <!--快捷直达模块-->
                     <div class="col-lg-2"></div>
+{#                    一开始需要信息：data名字，cata类别 和所有类别 #}
                         <div  class="col-lg-4 tagsList" id="shareholder" style="display: block">
                             <a href="#" data="中信证券" cate="0">中信证券</a>
                             <a href="#" data="方正富邦基金" cate="0">方正富邦基金</a>
@@ -262,7 +263,7 @@
                     $("#shareholder").show();
                     $("#stock").hide();
                     $("#concept").hide();
-                    change(choice);
+                    change(choice);//不加的话所有字会叠加在一起
                 }
                 else if(choice === '1'){
                     $("#shareholder").hide();
@@ -287,25 +288,27 @@
     //绘制echart
     window.onresize = function () {myChart.resize();}
     $.ajaxSetup({ async: false });
-    var myChart = echarts.init(document.getElementById("guanxi"));
+    var myChart = echarts.init(document.getElementById("guanxi"));//绘图的位置
     myChart.showLoading();
 
     myChart.hideLoading();
     option = {
         animationDurationUpdate: 1500,
         animationEasingUpdate: 'quinticInOut',
+        //图上边那个类别
         legend: {
             x: "center",
             show: true,
-            data: ["股东", "股票", "概念"],
+            data: ["股东", "股票", "概念"],//和下面categories保持一致
             textStyle:{fontSize: 15}
         },
+        //三个类别的颜色
         color:['#FF3EFF','#28cad8','#fc853e'],
         series: [  // 图谱样式设置
             {
                 type: 'graph',
                 layout: 'force',
-                symbolSize: 60,
+                symbolSize: 60,//节点大小
                 edgeSymbol: ['circle', 'arrow'],
                 edgeSymbolSize: [4, 4],
                 edgeLabel: {
@@ -346,8 +349,8 @@
                         curveness: 0.3
                     }
                 },
-                nodes: [],
-                links: [],
+                nodes: [],//节点
+                links: [],//关系
             }
         ]
     };
@@ -357,10 +360,10 @@
         // 点击图中节点也可以查看信息栏
         var type = params.dataType,  //node或edge
             data = params.data,  //json形式，node:{id,category,name}  edge:{source,target,value}
-            nodes = option.series[0].nodes,  //数组
+            nodes = option.series[0].nodes,  //数组?得把整个图的节点都传过去？
 
             graph = {
-                type: JSON.stringify(type),
+                type: JSON.stringify(type),//json转字符串
                 data: JSON.stringify(data),
                 nodes: JSON.stringify(nodes)
             };
@@ -376,15 +379,16 @@
     });
 
     //超链接直达
+    //点col-lg-4里面的a触发的函数
     $(".col-lg-4 a").click(function () {
         $.getJSON('/search_node', {
             name: $(this).attr("data"),
             choice: $(this).attr("cate"),
         }, function (json) {
             // 加载图对象
-            option.series[0].nodes = json.nodes;
-            option.series[0].links = json.links;
-            myChart.setOption(option, true);
+            option.series[0].nodes = json.nodes;//节点
+            option.series[0].links = json.links;//关系
+            myChart.setOption(option, true);//显示知识图谱
 
         })
     });
@@ -392,8 +396,8 @@
     //搜索事件
     function search() {
         $.getJSON('/search_node', {
-            name: $("#search").val(),
-            choice: $("#choice").val(),
+            name: $("#search").val(),//搜索框
+            choice: $("#choice").val(),//选项框
         }, function (json) {
             option.series[0].nodes = json.nodes;
             option.series[0].links = json.links;
